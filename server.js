@@ -179,10 +179,10 @@ app.delete('/movies/:id', [authenticateToken, authorizeRole('admin')], async (re
     }
 });
 
-// === DIRECTORS ROUTES ===
+// === DIRECTOR ROUTES ===
 app.get('/directors', async (req, res, next) => {
     const sql = `
-        SELECT id, name, nationality, birth_year
+        SELECT id, name, "birthYear"
         FROM directors
         ORDER BY id ASC
     `;
@@ -196,7 +196,7 @@ app.get('/directors', async (req, res, next) => {
 
 app.get('/directors/:id', async (req, res, next) => {
     const sql = `
-        SELECT id, name, nationality, birth_year
+        SELECT id, name, "birthYear"
         FROM directors
         WHERE id = $1
     `;
@@ -212,13 +212,13 @@ app.get('/directors/:id', async (req, res, next) => {
 });
 
 app.post('/directors', authenticateToken, async (req, res, next) => {  
-    const { name, nationality, birth_year } = req.body;  
-    if (!name || !nationality || !birth_year) {  
-        return res.status(400).json({ error: 'name, nationality, birth_year wajib diisi' });  
+    const { name, birthYear } = req.body;  
+    if (!name || !birthYear) {  
+        return res.status(400).json({ error: 'name dan birthYear wajib diisi' });  
     }  
-    const sql = 'INSERT INTO directors (name, nationality, birth_year) VALUES ($1, $2, $3) RETURNING *';  
+    const sql = 'INSERT INTO directors (name, "birthYear") VALUES ($1, $2) RETURNING *';  
     try {  
-        const result = await db.query(sql, [name, nationality, birth_year]);  
+        const result = await db.query(sql, [name, birthYear]);  
         res.status(201).json(result.rows[0]);  
     } catch (err) {  
         next(err);  
@@ -227,10 +227,10 @@ app.post('/directors', authenticateToken, async (req, res, next) => {
 
 app.put('/directors/:id', [authenticateToken, authorizeRole('admin')], 
 async (req, res, next) => { 
-    const { name, nationality, birth_year } = req.body; 
-    const sql = 'UPDATE directors SET name = $1, nationality = $2, birth_year = $3 WHERE id = $4 RETURNING *'; 
+    const { name, birthYear } = req.body; 
+    const sql = 'UPDATE directors SET name = $1, "birthYear" = $2 WHERE id = $3 RETURNING *'; 
     try { 
-        const result = await db.query(sql, [name, nationality, birth_year, req.params.id]); 
+        const result = await db.query(sql, [name, birthYear, req.params.id]); 
         if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Sutradara tidak ditemukan' });
         }
